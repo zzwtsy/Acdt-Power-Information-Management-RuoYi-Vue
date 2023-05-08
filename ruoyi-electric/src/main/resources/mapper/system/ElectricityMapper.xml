@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.electric.mapper.ElectricityMapper">
+
+    <resultMap type="Electricity" id="ElectricityResult">
+        <result property="id" column="id"/>
+        <result property="dormitoryId" column="dormitory_id"/>
+        <result property="lightingElectricityUsage" column="lighting_electricity_usage"/>
+        <result property="airElectricityUsage" column="air_electricity_usage"/>
+        <result property="date" column="electric_usage_date"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="selectElectricityVo">
+        select id,
+               dormitory_id,
+               lighting_electricity_usage,
+               air_electricity_usage,
+               electric_usage_date,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark
+        from electricity
+    </sql>
+
+    <select id="selectElectricityList" parameterType="Electricity" resultMap="ElectricityResult">
+        <include refid="selectElectricityVo"/>
+        <where>
+            <if test="dormitoryId != null ">and dormitory_id = #{dormitoryId}</if>
+            <if test="lightingElectricityUsage != null ">and lighting_electricity_usage = #{lightingElectricityUsage}
+            </if>
+            <if test="airElectricityUsage != null ">and air_electricity_usage = #{airElectricityUsage}</if>
+            <if test="date != null  and date != ''">and electric_usage_date = #{date}</if>
+        </where>
+        order by electric_usage_date desc
+    </select>
+
+    <select id="selectElectricityById" parameterType="Long" resultMap="ElectricityResult">
+        <include refid="selectElectricityVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertElectricity" parameterType="Electricity" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO electricity
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="dormitoryId != null">dormitory_id,</if>
+            <if test="lightingElectricityUsage != null">lighting_electricity_usage,</if>
+            <if test="airElectricityUsage != null">air_electricity_usage,</if>
+            <if test="date != null and date != ''">electric_usage_date,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="dormitoryId != null">#{dormitoryId},</if>
+            <if test="lightingElectricityUsage != null">#{lightingElectricityUsage},</if>
+            <if test="airElectricityUsage != null">#{airElectricityUsage},</if>
+            <if test="date != null and date != ''">#{date},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <!--批量新增用电记录-->
+    <insert id="insertElectricitys" parameterType="Electricity" useGeneratedKeys="true" keyProperty="id">
+        insert into electricity(
+        dormitory_id,
+        lighting_electricity_usage,
+        air_electricity_usage,
+        electric_usage_date
+        )values
+        <foreach item="electricity" collection="electricitys" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="electricity.dormitoryId != null">#{electricity.dormitoryId},</if>
+                <if test="electricity.lightingElectricityUsage != null">#{electricity.lightingElectricityUsage},</if>
+                <if test="electricity.airElectricityUsage != null">#{electricity.airElectricityUsage},</if>
+                <if test="electricity.date != null and electricity.date != ''">#{electricity.date},</if>
+                <if test="electricity.createBy != null">#{electricity.createBy},</if>
+                <if test="electricity.createTime != null">#{electricity.createTime},</if>
+                <if test="electricity.updateBy != null">#{electricity.updateBy},</if>
+                <if test="electricity.updateTime != null">#{electricity.updateTime},</if>
+                <if test="electricity.remark != null">#{electricity.remark},</if>
+            </trim>
+        </foreach>
+        ;
+    </insert>
+
+    <update id="updateElectricity" parameterType="Electricity">
+        update electricity
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="dormitoryId != null">dormitory_id = #{dormitoryId},</if>
+            <if test="lightingElectricityUsage != null">lighting_electricity_usage = #{lightingElectricityUsage},</if>
+            <if test="airElectricityUsage != null">air_electricity_usage = #{airElectricityUsage},</if>
+            <if test="date != null and date != ''">electric_usage_date = #{date},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteElectricityByDormId" parameterType="Long">
+        delete
+        from electricity
+        where dormitory_id = #{dormId}
+    </delete>
+
+    <delete id="deleteElectricityByIds" parameterType="String">
+        delete from electricity where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

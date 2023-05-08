@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.electric.mapper.ElectricityConfigMapper">
+
+    <resultMap type="ElectricityConfig" id="ElectricityConfigResult">
+        <result property="id" column="id"/>
+        <result property="cookie" column="cookie"/>
+        <result property="dormIds" column="dorm_ids"/>
+        <result property="wechatOpenid" column="wechat_openid"/>
+    </resultMap>
+
+    <sql id="selectElectricityConfigVo">
+        select id, cookie, dorm_ids, wechat_openid
+        from electricity_config
+    </sql>
+
+    <select id="selectElectricityConfig" parameterType="String" resultMap="ElectricityConfigResult">
+        <include refid="selectElectricityConfigVo"/>
+    </select>
+
+    <insert id="insertElectricityConfig" parameterType="ElectricityConfig">
+        insert into electricity_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="cookie != null and cookie != ''">cookie,</if>
+            <if test="dormIds != null">dorm_ids,</if>
+            <if test="wechatOpenid != null">wechat_openid,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="cookie != null and cookie != ''">#{cookie},</if>
+            <if test="dormIds != null">#{dormIds},</if>
+            <if test="wechatOpenid != null">#{wechatOpenid},</if>
+        </trim>
+    </insert>
+
+    <update id="updateElectricityConfig" parameterType="ElectricityConfig">
+        update electricity_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="cookie != null and cookie != ''">cookie = #{cookie},</if>
+            <if test="dormIds != null">dorm_ids = #{dormIds},</if>
+            <if test="wechatOpenid != null">wechat_openid = #{wechatOpenid},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteElectricityConfigById" parameterType="String">
+        delete
+        from electricity_config
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteElectricityConfigByIds" parameterType="String">
+        delete from electricity_config where electricity_config.id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
