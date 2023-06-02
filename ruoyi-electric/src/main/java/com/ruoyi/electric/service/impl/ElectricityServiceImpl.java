@@ -1,8 +1,11 @@
 package com.ruoyi.electric.service.impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.electric.domain.vo.LineChartVo;
+import com.ruoyi.electric.tools.Tools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.electric.mapper.ElectricityMapper;
@@ -40,6 +43,38 @@ public class ElectricityServiceImpl implements IElectricityService {
     @Override
     public List<Electricity> selectElectricityList(Electricity electricity) {
         return electricityMapper.selectElectricityList(electricity);
+    }
+
+    @Override
+    public List<Integer> getDormIdList() {
+        return electricityMapper.selectDormIds();
+    }
+
+    @Override
+    public LineChartVo selectElectricityListByDate(String start, String end, Integer dormId) {
+        if (dormId == null
+                || start == null
+                || end == null
+                || start.isEmpty()
+                || end.isEmpty()
+                || !Tools.isDate(start)
+                || !Tools.isDate(end)
+        ) {
+            return null;
+        }
+
+        List<Electricity> electricities = electricityMapper.selectElectricityListByDate(start, end, dormId);
+
+        LineChartVo lineChartVo = new LineChartVo();
+        List<String> date = electricities.stream().map(Electricity::getDate).collect(Collectors.toList());
+        List<Double> airUsage = electricities.stream().map(Electricity::getAirElectricityUsage).collect(Collectors.toList());
+        List<Double> lightningUsage = electricities.stream().map(Electricity::getLightingElectricityUsage).collect(Collectors.toList());
+
+        lineChartVo.setDate(date);
+        lineChartVo.setAirElectricityUsageData(airUsage);
+        lineChartVo.setLightingElectricityUsageData(lightningUsage);
+
+        return lineChartVo;
     }
 
     /**

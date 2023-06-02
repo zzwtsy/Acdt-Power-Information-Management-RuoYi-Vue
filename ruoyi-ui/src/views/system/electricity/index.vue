@@ -1,5 +1,6 @@
 <template>
   <div class="app-container">
+    <BarCharts style="width: 100%" />
     <el-form
       :model="queryParams"
       ref="queryForm"
@@ -206,9 +207,13 @@ import {
   addElectricity,
   updateElectricity,
 } from "@/api/system/electricity";
+import BarCharts from "./charts";
 
 export default {
   name: "Electricity",
+  components: {
+    BarCharts,
+  },
   data() {
     return {
       // 遮罩层

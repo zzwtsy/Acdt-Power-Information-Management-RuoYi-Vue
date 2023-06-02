@@ -31,6 +31,22 @@ public interface ElectricityMapper {
      */
     public List<Electricity> selectElectricityList(Electricity electricity);
 
+    public List<Integer> selectDormIds();
+
+    /**
+     * 选择电力通过宿舍id列表
+     *
+     * @param start  开始
+     * @param end    结束
+     * @param dormId 宿舍id
+     * @return {@link List}<{@link Electricity}>
+     */
+    public List<Electricity> selectElectricityListByDate(
+            @Param("start") String start,
+            @Param("end") String end,
+            @Param("dormId") Integer dormId
+    );
+
     /**
      * 新增宿舍电费记录
      *

@@ -6,7 +6,6 @@ import com.ruoyi.electric.tools.Const;
 import com.ruoyi.electric.utils.JsonUtils;
 import com.ruoyi.electric.utils.OkhttpUtils;
 import okhttp3.Headers;
-import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.slf4j.Logger;
@@ -28,7 +27,6 @@ public class Api {
         String url = HOST + "go?openid=" + Const.wechatOpenid;
         String cookie = null;
         try {
-            Request request = OkhttpUtils.get(url, null).request();
             cookie = OkhttpUtils.get(url, null).request()
                     // http://df.acdt.edu.cn/home;jsessionid=097DFBA4F3341118C8DEE29CEBA54444
                     .url().encodedPath().split(";")[1]

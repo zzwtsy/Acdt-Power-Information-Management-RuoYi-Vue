@@ -2,16 +2,11 @@ package com.ruoyi.electric.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.electric.domain.vo.LineChartVo;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -23,14 +18,13 @@ import com.ruoyi.common.core.page.TableDataInfo;
 
 /**
  * 宿舍电费记录Controller
- * 
+ *
  * @author ruoyi
- * @date 2023-05-04
+ * @since 2023-05-04
  */
 @RestController
 @RequestMapping("/api/electricity")
-public class ElectricityController extends BaseController
-{
+public class ElectricityController extends BaseController {
     @Autowired
     private IElectricityService electricityService;
 
@@ -39,11 +33,31 @@ public class ElectricityController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('system:electricity:list')")
     @GetMapping("/list")
-    public TableDataInfo list(Electricity electricity)
-    {
+    public TableDataInfo list(Electricity electricity) {
         startPage();
         List<Electricity> list = electricityService.selectElectricityList(electricity);
         return getDataTable(list);
+    }
+
+    @PreAuthorize("@ss.hasPermi('system:electricity:queryByDate')")
+    @GetMapping("/queryByDate")
+    public AjaxResult getElectricityListByDate(
+            @RequestParam("start") String start,
+            @RequestParam("end") String end,
+            @RequestParam("dormId") Integer dormId
+    ) {
+        LineChartVo lineChartVo = electricityService.selectElectricityListByDate(start, end, dormId);
+
+        if (lineChartVo == null) {
+            return error("暂无数据");
+        }
+        return success(lineChartVo);
+    }
+
+    @PreAuthorize("@ss.hasPermi('system:electricity:queryDormIds')")
+    @GetMapping("/queryDormIds")
+    public List<Integer> getDormIdList() {
+        return electricityService.getDormIdList();
     }
 
     /**
@@ -52,8 +66,7 @@ public class ElectricityController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:electricity:export')")
     @Log(title = "宿舍电费记录", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, Electricity electricity)
-    {
+    public void export(HttpServletResponse response, Electricity electricity) {
         List<Electricity> list = electricityService.selectElectricityList(electricity);
         ExcelUtil<Electricity> util = new ExcelUtil<Electricity>(Electricity.class);
         util.exportExcel(response, list, "宿舍电费记录数据");
@@ -64,8 +77,7 @@ public class ElectricityController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('system:electricity:query')")
     @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
-    {
+    public AjaxResult getInfo(@PathVariable("id") Long id) {
         Electricity electricity = electricityService.selectElectricityById(id);
         return success(electricity);
     }
@@ -76,8 +88,7 @@ public class ElectricityController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:electricity:add')")
     @Log(title = "宿舍电费记录", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody Electricity electricity)
-    {
+    public AjaxResult add(@RequestBody Electricity electricity) {
         return toAjax(electricityService.insertElectricity(electricity));
     }
 
@@ -87,8 +98,7 @@ public class ElectricityController extends BaseController
     @PreAuthorize("@ss.hasPermi('system:electricity:edit')")
     @Log(title = "宿舍电费记录", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody Electricity electricity)
-    {
+    public AjaxResult edit(@RequestBody Electricity electricity) {
         return toAjax(electricityService.updateElectricity(electricity));
     }
 
@@ -97,9 +107,8 @@ public class ElectricityController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('system:electricity:remove')")
     @Log(title = "宿舍电费记录", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
+    @DeleteMapping("/{ids}")
+    public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(electricityService.deleteElectricityByIds(ids));
     }
 }

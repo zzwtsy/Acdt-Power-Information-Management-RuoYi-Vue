@@ -47,6 +47,18 @@
         <include refid="selectElectricityVo"/>
         where id = #{id}
     </select>
+    <!--  根据日期范围和宿舍号查询数据  -->
+    <select id="selectElectricityListByDate" resultType="com.ruoyi.electric.domain.Electricity"
+            resultMap="ElectricityResult">
+        <include refid="selectElectricityVo"/>
+        WHERE dormitory_id = #{dormId}
+        AND electric_usage_date BETWEEN #{start} AND #{end}
+        ORDER BY electric_usage_date DESC
+    </select>
+    <select id="selectDormIds" resultType="java.lang.Integer">
+        SELECT DISTINCT dormitory_id
+        FROM electricity
+    </select>
 
     <insert id="insertElectricity" parameterType="Electricity" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO electricity
