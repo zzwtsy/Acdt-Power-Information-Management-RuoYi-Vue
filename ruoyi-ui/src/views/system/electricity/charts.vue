@@ -26,7 +26,7 @@
     </div>
 </template>
 
-<script lang="js">
+<script>
 import { getElectricityListByDate, getQueryDormIds } from "@/api/system/electricity";
 import * as echarts from "echarts";
 
@@ -105,6 +105,9 @@ export default {
                         trigger: 'axis',
                         axisPointer: {
                             type: 'shadow'
+                        },
+                        valueFormatter: (value) => {
+                            return value + ' 度'
                         }
                     },
                     legend: {},
@@ -117,7 +120,7 @@ export default {
                     yAxis:
                     {
                         type: "value",
-                        name: "用电量",
+                        name: "用电量/度",
                         position: "left",
                         axisLabel: {
                             formatter: "{value} 度"
